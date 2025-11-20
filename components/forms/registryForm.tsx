@@ -1,9 +1,9 @@
 import { Eye, EyeClosed } from "lucide-react";
-import { use, useState } from "react";
+import {  useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { RegistryData, RegistryResponse } from "@/lib/authTypes";
-import { useForm, SubmitHandler, set } from "react-hook-form";
+import { RegistryData } from "@/lib/authTypes";
+import { useForm} from "react-hook-form";
 import { Spinner } from "../ui/spinner";
 import { RegistryCompany } from "@/lib/auth";
 import { useRouter } from "next/navigation";
