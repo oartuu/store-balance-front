@@ -56,7 +56,7 @@ function Header({ title }: HeaderProps) {
                   </li>
                   <li className="p-2">
                     <div className="flex justify-between">
-                      <span>Novo Registro</span>
+                      <Link href="/registry/record/create">Novo Registro</Link>
                       <ChevronRight />
                     </div>
                     <Separator />
