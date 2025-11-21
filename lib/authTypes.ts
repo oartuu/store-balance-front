@@ -14,12 +14,12 @@ export type RegisterData = {
 };
 
 export type AddEmployeeData = {
-  CompanyName: string;
-  Name: string;
-  Email: string;
-  Password: string;
-  ConfirmPassword: string;
-  IsAdmin: boolean;
+  companyName: string;
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  isAdmin: boolean;
 }
 
 export interface LoginResponse {
