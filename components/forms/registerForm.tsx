@@ -46,20 +46,24 @@ export default function RegisterForm() {
     }
   }
 
-  async function onSubmit(data: RegisterData) {
-    const valid = validatePasswordMatch(data.password, data.confirmPassword);
+  async function onSubmit(formData: RegisterData) {
+    const valid = validatePasswordMatch(
+      formData.password,
+      formData.confirmPassword
+    );
     if (valid) {
       setLoading(true);
       try {
-        const response:RegisterResponse = await RegisterCompany(data);
+        const response: RegisterResponse = await RegisterCompany(formData);
         localStorage.setItem("auth_token", response.token)
         localStorage.setItem("user", response.user.name )
         localStorage.setItem("is_admin", response.user.isAdmin.toString() )
+        router.push("/admin");
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
-        router.push("/admin")
+        
       }
     }
   }
