@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import RegistryForm from "@/components/forms/registryForm";
+import RegistryForm from "@/components/forms/registerForm";
 
 
 const page = () => {

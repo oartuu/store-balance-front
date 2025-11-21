@@ -1,5 +1,5 @@
 // lib/requests.ts
-import { RegistryData, RegistryResponse, ResponseError } from "./authTypes";
+import { RegisterData, RegisterResponse, ResponseError } from "./authTypes";
 import { api } from "./axios";
 
 export async function getApiStatus() {
@@ -12,10 +12,10 @@ export async function getApiStatus() {
   }
 }
 
-export async function RegistryCompany (data:RegistryData){
+export async function RegisterCompany (data:RegisterData){
   try{
-    const response:RegistryResponse = await api.post("/auth/register", data)
-    return response
+    const response = await api.post("/auth/register", data)
+    return response.data
   } catch (error: ResponseError | any){
     return error.message
   }

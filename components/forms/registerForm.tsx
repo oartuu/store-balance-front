@@ -2,14 +2,14 @@ import { Eye, EyeClosed } from "lucide-react";
 import {  useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { RegistryData } from "@/lib/authTypes";
+import { RegisterData, RegisterResponse } from "@/lib/authTypes";
 import { useForm} from "react-hook-form";
 import { Spinner } from "../ui/spinner";
-import { RegistryCompany } from "@/lib/auth";
+import { RegisterCompany } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 
 
-export default function RegistryForm() {
+export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
@@ -20,7 +20,7 @@ export default function RegistryForm() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<RegistryData>();
+  } = useForm<RegisterData>();
   const handleShowPassword = () => {
     if (showPassword) {
       setShowPassword(false);
@@ -46,15 +46,15 @@ export default function RegistryForm() {
     }
   }
 
-  async function onSubmit(data: RegistryData) {
+  async function onSubmit(data: RegisterData) {
     const valid = validatePasswordMatch(data.password, data.confirmPassword);
     if (valid) {
       setLoading(true);
       try {
-        const response = await RegistryCompany(data);
-        localStorage.setItem("auth_token", response.data.token)
-        localStorage.setItem("user", response.data.user.name )
-        localStorage.setItem("is_admin", response.data.user.isAdmin )
+        const response:RegisterResponse = await RegisterCompany(data);
+        localStorage.setItem("auth_token", response.token)
+        localStorage.setItem("user", response.user.name )
+        localStorage.setItem("is_admin", response.user.isAdmin.toString() )
       } catch (err) {
         console.error(err);
       } finally {

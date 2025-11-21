@@ -4,7 +4,7 @@ export type LoginData = {
   email: string;
   password: string;
 };
-export type RegistryData = {
+export type RegisterData = {
   companyName: string;
   name: string;
   email: string;
@@ -12,7 +12,7 @@ export type RegistryData = {
   confirmPassword: string;
 };
 
-export interface RegistryResponse {
+export interface RegisterResponse {
   user: User;
   company: Company;
   token: string;
