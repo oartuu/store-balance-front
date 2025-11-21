@@ -1,4 +1,4 @@
-import React from "react";
+"use client"
 import { Separator } from "../ui/separator";
 import { ChevronRight, LogOut, Menu } from "lucide-react";
 import {
@@ -11,19 +11,26 @@ import {
 } from "../ui/sheet";
 import { Item, ItemContent } from "../ui/item";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface HeaderProps {
   title: string;
 }
 
 function Header({ title }: HeaderProps) {
+   const [admin, setAdmin] = useState<string | null>(null);
+
+   useEffect(() => {
+     const value = localStorage.getItem("is_admin");
+     setAdmin(value);
+   }, []);
   return (
     <div className="w-full px-4 flex flex-col gap-3">
       <div className="w-full flex justify-between [&>h1]:text-2xl [&>h1]:font-bold px-2">
         <h1>{title}</h1>
         <Sheet>
           <SheetTrigger asChild>
-            <Menu className="mt-1 hover:cursor-pointer" />
+            {admin === "true"? (<Menu className="mt-1 hover:cursor-pointer" />) : null}
           </SheetTrigger>
           <SheetContent className="dark:bg-zinc-900 p-4">
             <SheetTitle className="text-2xl font-bold">

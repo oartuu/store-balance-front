@@ -1,5 +1,5 @@
 // lib/requests.ts
-import { RegisterData, RegisterResponse, ResponseError } from "./authTypes";
+import { LoginData, RegisterData, RegisterResponse, ResponseError } from "./authTypes";
 import { api } from "./axios";
 
 export async function getApiStatus() {
@@ -12,6 +12,14 @@ export async function getApiStatus() {
   }
 }
 
+export async function UserLogin (data:LoginData){
+  try{
+    const response = await api.post("/auth/login", data)
+    return response.data
+  } catch (error: ResponseError | any){
+    return error.message
+  }
+}
 export async function RegisterCompany (data:RegisterData){
   try{
     const response = await api.post("/auth/register", data)
@@ -21,16 +29,4 @@ export async function RegisterCompany (data:RegisterData){
   }
 }
 
-export async function UserLogin(req:any){
 
-    try {
-        const response = await api.post("/auth/login", req);
-
-        return response.data;
-    }
-    catch(error:any){
-        console.log("Erro no login")
-        throw new Error(error?.response?.data?.message || "Erro interno");
-    }
-
-}

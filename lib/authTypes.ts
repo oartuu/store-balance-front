@@ -4,6 +4,7 @@ export type LoginData = {
   email: string;
   password: string;
 };
+
 export type RegisterData = {
   companyName: string;
   name: string;
@@ -12,6 +13,19 @@ export type RegisterData = {
   confirmPassword: string;
 };
 
+export type AddEmployeeData = {
+  CompanyName: string;
+  Name: string;
+  Email: string;
+  Password: string;
+  ConfirmPassword: string;
+  IsAdmin: boolean;
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
+}
 export interface RegisterResponse {
   user: User;
   company: Company;
