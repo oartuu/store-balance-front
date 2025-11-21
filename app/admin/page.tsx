@@ -41,7 +41,7 @@ const page = () => {
       <main className=" flex-1 flex flex-col justify-start gap-8 px-2 overflow-y-scroll">
         <section className="flex flex-col gap-6 p-4 ">
           <h1 className="text-xl font-bold">Hoje</h1>
-          <TodayRecordsItem recordsCount={todayRecords.length} />
+          <TodayRecordsItem recordsCount={ todayRecords? todayRecords.length : "0"} />
         </section>
         <section className="flex flex-col gap-6 p-4 ">
           <h1 className="text-xl font-bold">Histórico</h1>
