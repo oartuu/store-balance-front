@@ -11,31 +11,33 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
 import { finishDay, getDayRecord } from "@/lib/records";
 import { DayRecordResponse } from "@/lib/recordsTypes";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
-const page = () => {
+interface PageProps {
+  params: Promise<{
+    day: string;
+  }>;
+}
+const page = ({ params }: PageProps) => {
+  const { day } = use(params);
   const [dayRecords, setDayRecords] = useState<DayRecordResponse>();
   const [recordsCount, setRecordsCount] = useState(0);
   const [isDayOpen, setIsDayOpen] = useState(true);
-  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     async function fetchApi() {
-      setIsLoading(true)
       try {
-        const today = new Date();
-        const response: DayRecordResponse = await getDayRecord(today);
+        const teste = { date: `${day}T03:00:00.000Z` };
+        console.log(teste);
+        const response: DayRecordResponse = await getDayRecord(teste);
         console.log(response);
         setDayRecords(response);
         setRecordsCount(response.records.length);
         setIsDayOpen(response.isOpen);
       } catch (err) {
         console.log(err);
-      }finally{
-        setIsLoading(false)
       }
     }
     fetchApi();
@@ -82,14 +84,7 @@ const page = () => {
             </span>
           </h1>
 
-          <div className="flex flex-1 flex-col justify-start gap-4 overflow-y-auto">
-
-            {isLoading ? (
-              <div className="flex-1 w-full flex items-center justify-center ">
-               <Spinner className="size-10"/>
-              </div>
-            ) : null}
-
+          <div className="flex flex-col justify-between gap-4 overflow-y-auto scroll-bg">
             {dayRecords?.records.map((record) => {
               const mappedItems = record.items.map((item) => ({
                 title: item.title,
