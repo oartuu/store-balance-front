@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Separator } from "../ui/separator";
 import { ChevronRight, LogOut, Menu } from "lucide-react";
 import {
@@ -18,19 +18,26 @@ interface HeaderProps {
 }
 
 function Header({ title }: HeaderProps) {
-   const [admin, setAdmin] = useState<string | null>(null);
+  const [admin, setAdmin] = useState<string | null>(null);
 
-   useEffect(() => {
-     const value = localStorage.getItem("is_admin");
-     setAdmin(value);
-   }, []);
+  useEffect(() => {
+    const value = localStorage.getItem("is_admin");
+    setAdmin(value);
+  }, []);
   return (
     <div className="w-full px-4 flex flex-col gap-3">
       <div className="w-full flex justify-between [&>h1]:text-2xl [&>h1]:font-bold px-2">
         <h1>{title}</h1>
+        {admin === "false" ? (
+          <Link href="/registry/record/create" className="hover:cursor-pointer">
+            Novo Registro 
+          </Link>
+        ) : null}
         <Sheet>
           <SheetTrigger asChild>
-            {admin === "true"? (<Menu className="mt-1 hover:cursor-pointer" />) : null}
+            {admin === "true" ? (
+              <Menu className="mt-1 hover:cursor-pointer" />
+            ) : null}
           </SheetTrigger>
           <SheetContent className="dark:bg-zinc-900 p-4">
             <SheetTitle className="text-2xl font-bold">
@@ -49,7 +56,7 @@ function Header({ title }: HeaderProps) {
                   </li>
                   <li className="p-2">
                     <div className="flex justify-between">
-                      <Link href="/admin/employers" >Funcionários</Link>
+                      <Link href="/admin/employers">Funcionários</Link>
                       <ChevronRight />
                     </div>
                     <Separator />
