@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -32,10 +33,11 @@ export default function LoginForm() {
     try{
      const response:LoginResponse = await UserLogin(formData)
      localStorage.setItem("auth_token", response.token)
-     localStorage.setItem("user", response.user.name )
-     localStorage.setItem("is_admin", response.user.isAdmin.toString() )
+     //localStorage.setItem("user", response.user.name )
+     //localStorage.setItem("is_admin", response.user.isAdmin.toString() )
      router.push("/admin")
     }catch (err){
+        setError(true)
         console.log(err)
     }finally{
         setIsLoading(false)
@@ -44,6 +46,11 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 ">
+      {error ? (
+        <div className="w-full border border-red-400 bg-red-300/60 p-4 rounded-md text-center">
+          <span className="">Credenciais inválidas</span>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-3 [&>input]:border [&>input]:rounded-lg [&>input]:px-4 [&>input]:py-2 [&>input]:shadow-md [&>label]:ml-2">
         <label htmlFor="company">Empresa</label>
         <input

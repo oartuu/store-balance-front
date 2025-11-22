@@ -1,20 +1,20 @@
 import { Eye, EyeClosed } from "lucide-react";
-import {  useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { RegisterData, RegisterResponse } from "@/lib/authTypes";
-import { useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Spinner } from "../ui/spinner";
 import { RegisterCompany } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const [error, setError] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -54,22 +54,41 @@ export default function RegisterForm() {
     if (valid) {
       setLoading(true);
       try {
-        const response: RegisterResponse = await RegisterCompany(formData);
-        localStorage.setItem("auth_token", response.token)
-        localStorage.setItem("user", response.user.name )
-        localStorage.setItem("is_admin", response.user.isAdmin.toString() )
+        const response = await RegisterCompany(formData);
+        // Verifica algo específico no response para garantir que é sucesso "real"
+        if (!response.token) {
+          // Se por algum motivo não tem token, trata como erro
+          setError(true)
+          return
+        }
+
+        localStorage.setItem("auth_token", response.token);
+        localStorage.setItem("user_name", response.user.name )
+        localStorage.setItem("is_admin", response.user.isAdmin.toString()) 
         router.push("/admin");
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        console.error("Erro no registro:", err);
+        setError(true);
+
+        // Se quiser, pode extrair mensagem do servidor:
+        if (err.response) {
+          // Erro HTTP
+          console.log("Status:", err.response.status);
+          console.log("Erro retornado:", err.response.data);
+        }
       } finally {
         setLoading(false);
-        
       }
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 ">
+      {error ? (
+        <div className="w-full border border-red-400 bg-red-300/60 p-4 rounded-md text-center">
+          <span className="">Empresa ou Email já cadastrados</span>
+        </div>
+      ) : null}
       <div className="flex flex-col gap-3 [&>input]:border [&>input]:rounded-lg [&>input]:px-4 [&>input]:py-2 [&>input]:shadow-md [&>label]:ml-2">
         <label htmlFor="companyName">Nome da Empresa</label>
         <input
@@ -124,6 +143,7 @@ export default function RegisterForm() {
             />
           )}
           <input
+            className="w-full"
             type={showPassword ? "text" : "password"}
             {...register("password", { required: true })}
             placeholder="Digite sua Senha"
@@ -156,6 +176,7 @@ export default function RegisterForm() {
           )}
           <input
             type={showConfirmPassword ? "text" : "password"}
+            className="w-full"
             {...register("confirmPassword", { required: true })}
             placeholder="Digite sua Senha"
           />

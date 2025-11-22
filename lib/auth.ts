@@ -16,16 +16,16 @@ export async function UserLogin (data:LoginData){
   try{
     const response = await api.post("/auth/login", data)
     return response.data
-  } catch (error: ResponseError | any){
-    return error.message
+  } catch (error){
+    return error
   }
 }
 export async function RegisterCompany (data:RegisterData){
   try{
     const response = await api.post("/auth/register", data)
     return response.data
-  } catch (error: ResponseError | any){
-    return error.message
+  } catch (error){
+    return error
   }
 }
 

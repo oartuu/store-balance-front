@@ -15,7 +15,7 @@ export default function AddEmployeeForm() {
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
+  const [error, SetError] = useState(false);
   const {
     register,
     handleSubmit,
@@ -66,9 +66,14 @@ export default function AddEmployeeForm() {
       };
       try {
         const response = await addEmployees(formatData);
+        if (!response.id){
+          SetError(true)
+          return
+        }
         window.location.reload();
-        return response;
+        return (response)
       } catch (err) {
+        SetError(true);
         console.log(err);
       } finally {
         setIsLoading(false);
@@ -82,6 +87,11 @@ export default function AddEmployeeForm() {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-4 "
         >
+          {error ? (
+            <div className="w-full border border-red-400 bg-red-300/60 p-4 rounded-md text-center">
+              <span className=""> Email já cadastrado</span>
+            </div>
+          ) : null}
           <div className="flex flex-col gap-3 [&>input]:border [&>input]:rounded-lg [&>input]:px-4 [&>input]:py-2 [&>input]:shadow-md [&>label]:ml-2">
             <label htmlFor="name">Nome</label>
             <input
