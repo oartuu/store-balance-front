@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { createRecord } from "@/lib/records";
+import Link from "next/link";
 
 // Regex para permitir apenas dígitos e vírgula
 const numberCommaRegex = /^\d*(,\d*)*$/;
@@ -131,7 +132,10 @@ export function CreateRecordForm() {
                       value={selField.value}
                       onValueChange={selField.onChange}
                     >
-                      <SelectTrigger className="w-full" aria-invalid={!!fieldState.error}>
+                      <SelectTrigger
+                        className="w-full"
+                        aria-invalid={!!fieldState.error}
+                      >
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -170,13 +174,14 @@ export function CreateRecordForm() {
                         defaultValue={titleField.value}
                         render={({ field: selField }) => (
                           <Select
-                          
                             value={selField.value}
                             onValueChange={selField.onChange}
-                            
                           >
-                            <SelectTrigger className="w-full" aria-invalid={!!fieldState.error}>
-                              <SelectValue  placeholder="Selecione item" />
+                            <SelectTrigger
+                              className="w-full"
+                              aria-invalid={!!fieldState.error}
+                            >
+                              <SelectValue placeholder="Selecione item" />
                             </SelectTrigger>
                             <SelectContent className="">
                               <SelectItem value="mercado">Mercado</SelectItem>
@@ -225,28 +230,27 @@ export function CreateRecordForm() {
                   </FormItem>
                 )}
               />
-
-              {/* <Button
-                type="button"
-                variant="destructive"
-                onClick={() => remove(index)}
-                className="mt-5"
-              >
-                Remover
-              </Button> */}
             </div>
           ))}
 
           <Button
             type="button"
             variant="outline"
+            className="hover:cursor-pointer w-full"
             onClick={() => append({ title: "mercado", price: "" })}
           >
             Adicionar Item
           </Button>
         </div>
 
-        <Button className="w-full" type="submit">Enviar</Button>
+        <div className="w-full flex flex-col justify-between gap-4 text-center">
+          <Button className="w-full hover:cursor-pointer" type="submit">
+            Enviar
+          </Button>
+          <Link href="/registry/history" className="hover:cursor-pointer">
+            Ver Registros
+          </Link>
+        </div>
       </form>
     </Form>
   );
