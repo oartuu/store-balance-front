@@ -7,14 +7,15 @@ import { useForm } from "react-hook-form";
 import { AddEmployeeData } from "@/lib/authTypes";
 import { useRouter } from "next/navigation";
 import { addEmployees } from "@/lib/employee";
+import { Spinner } from "../ui/spinner";
 
 export default function AddEmployeeForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -47,6 +48,7 @@ export default function AddEmployeeForm() {
 
   function handleToggle(pressed: boolean) {
     setIsAdmin(pressed);
+    console.log(pressed);
   }
 
   async function onSubmit(formData: AddEmployeeData) {
@@ -55,17 +57,21 @@ export default function AddEmployeeForm() {
       formData.confirmPassword
     );
     if (valid) {
+      setIsLoading(true);
       const formatData = {
-        ...formData,
-        isAdmin,
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        isAdmin: isAdmin,
       };
-      try{
-        const response = await addEmployees(formatData)
+      try {
+        const response = await addEmployees(formatData);
         window.location.reload();
-        return (response)
-        
-      }catch(err){
-        console.log(err)
+        return response;
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
       }
     }
   }
@@ -181,9 +187,22 @@ export default function AddEmployeeForm() {
             </Toggle>
           </div>
           <div className="text-center flex flex-col gap-2">
-            <Button className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300">
-              Adicionar
-            </Button>
+            {isLoading ? (
+              <Button
+                disabled
+                className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300"
+              >
+                <Spinner />
+                Criando...
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300"
+              >
+                Adicionar
+              </Button>
+            )}
           </div>
         </form>
       </CardContent>

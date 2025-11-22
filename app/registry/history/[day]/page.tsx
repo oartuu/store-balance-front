@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { finishDay, getDayRecord } from "@/lib/records";
 import { DayRecordResponse } from "@/lib/recordsTypes";
 import { use, useEffect, useState } from "react";
@@ -25,9 +26,10 @@ const page = ({ params }: PageProps) => {
   const [dayRecords, setDayRecords] = useState<DayRecordResponse>();
   const [recordsCount, setRecordsCount] = useState(0);
   const [isDayOpen, setIsDayOpen] = useState(true);
-
+const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     async function fetchApi() {
+       setIsLoading(true);
       try {
         const teste = { date: `${day}T03:00:00.000Z` };
         console.log(teste);
@@ -38,6 +40,8 @@ const page = ({ params }: PageProps) => {
         setIsDayOpen(response.isOpen);
       } catch (err) {
         console.log(err);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchApi();
@@ -84,7 +88,12 @@ const page = ({ params }: PageProps) => {
             </span>
           </h1>
 
-          <div className="flex flex-col justify-between gap-4 overflow-y-auto scroll-bg">
+          <div className="flex flex-1 flex-col justify-start gap-4 overflow-y-auto">
+            {isLoading ? (
+              <div className="flex-1 w-full flex items-center justify-center ">
+                <Spinner className="size-10" />
+              </div>
+            ) : null}
             {dayRecords?.records.map((record) => {
               const mappedItems = record.items.map((item) => ({
                 title: item.title,
@@ -104,38 +113,6 @@ const page = ({ params }: PageProps) => {
           </div>
 
           {isDayOpen ? <Separator /> : null}
-        </section>
-        <section className="flex flex-col gap-6 p-4 ">
-          <Dialog>
-            <DialogTrigger asChild>
-              {isDayOpen ? (
-                <Button className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300 text-shadow-muted">
-                  Fechar o dia
-                </Button>
-              ) : null}
-            </DialogTrigger>
-            <DialogContent className="dark:bg-zinc-900">
-              <DialogTitle className="flex flex-col gap-2">
-                <span>Confirmação Necessária</span>
-                <Separator />
-              </DialogTitle>
-              <Card className="shadow-2xl">
-                <CardContent>
-                  <div className="flex flex-col gap-4 text-center ">
-                    <h1>Não é possível reverter esta ação</h1>
-                    <div className="text-center flex flex-col gap-2">
-                      <Button
-                        onClick={handleFinishDay}
-                        className="shadow-md hover:cursor-pointer hover:bg-red-300 hover:border bg-red-400 text-zinc-50  transition-all duration-300"
-                      >
-                        Confirmar
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </DialogContent>
-          </Dialog>
         </section>
       </main>
     </div>

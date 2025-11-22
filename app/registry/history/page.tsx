@@ -113,7 +113,7 @@ const page = () => {
         <section className="flex flex-col gap-6 p-4 ">
           <Dialog>
             <DialogTrigger asChild>
-              {isDayOpen ? (
+              {isDayOpen && !isLoading ? (
                 <Button className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300 text-shadow-muted">
                   Fechar o dia
                 </Button>
