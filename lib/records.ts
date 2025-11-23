@@ -91,6 +91,7 @@ export async function startDay(){
         const response = await api.post("/records/start", {
             headers:{
                 Authorization: `Bearer ${token}`,
+
             }
         })
         return response.data
