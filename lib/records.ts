@@ -40,7 +40,13 @@ export async function getDayRecord(data: any) {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
+      const message = error.response?.data?.message ?? error.message;
+      // lança um objeto de erro padronizado
+      throw { status, message };
+    }
+    throw error; // erro inesperado, relança
   }
 }
 
@@ -62,6 +68,26 @@ export async function createRecord(data:any){
     const token = localStorage.getItem("auth_token");
     try{
         const response = await api.post("/records", data, {
+            headers:{
+                Authorization: `Bearer ${token}`,
+            }
+        })
+        return response.data
+    }catch(error){
+        if (error instanceof AxiosError) {
+              const status = error.response?.status;
+              const message = error.response?.data?.message ?? error.message;
+              // lança um objeto de erro padronizado
+              throw { status, message };
+            }
+            throw error; // erro inesperado, relança
+    }
+
+}
+export async function startDay(){
+    const token = localStorage.getItem("auth_token");
+    try{
+        const response = await api.post("/records/start", {
             headers:{
                 Authorization: `Bearer ${token}`,
             }

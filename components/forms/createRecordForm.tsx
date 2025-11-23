@@ -32,8 +32,8 @@ import { useState } from "react";
 const numberCommaRegex = /^\d*(,\d*)*$/;
 
 const formSchema = z.object({
-  title: z.string().min(1, "Título é obrigatório"),
   type: z.enum(["SALE", "WITHDRAW"], "Tipo inválido"),
+  origin: z.enum(["CASH", "CARD"], "Tipo inválido"),
   items: z
     .array(
       z.object({
@@ -58,8 +58,8 @@ export function CreateRecordForm() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
       type: "SALE",
+      origin: "CASH",
       items: [
         {
           title: "mercado",
@@ -73,6 +73,27 @@ export function CreateRecordForm() {
     control: form.control,
     name: "items",
   });
+  function getTitle(origin: string, type: string): string {
+    let title = "";
+
+    if (type === "SALE") {
+      title += "Venda: ";
+    } else if (type === "WITHDRAW") {
+      title += "Retirada: ";
+    } else {
+      title += "desconhecido: ";
+    }
+
+    if (origin === "CASH") {
+      title += "Dinheiro";
+    } else if (origin === "CARD") {
+      title += "Cartão ou Pix";
+    } else {
+      title += "Método desconhecido";
+    }
+
+    return title;
+  }
 
   const onSubmit = async (data: FormSchema) => {
     // Converte a string price (ex: "12,34") para número (12.34)
@@ -80,9 +101,11 @@ export function CreateRecordForm() {
       ...item,
       price: parseFloat(item.price.replace(/,/g, ".")),
     }));
+    const title = getTitle(data.origin, data.type);
     const formatData = {
-      title: data.title,
+      title: title,
       type: data.type,
+      origin: data.origin,
       items: formattedItems,
     };
     try{
@@ -104,14 +127,36 @@ export function CreateRecordForm() {
             <span className="">{errMessage}</span>
           </div>
         ) : null}
+        {/* Tipo (Select: Venda / Retirada) */}
         <FormField
           control={form.control}
-          name="title"
+          name="origin"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Título</FormLabel>
+              <FormLabel>Pagamento</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Ex: Venda(4)" />
+                <Controller
+                  name="origin"
+                  control={form.control}
+                  defaultValue={field.value}
+                  render={({ field: selField }) => (
+                    <Select
+                      value={selField.value}
+                      onValueChange={selField.onChange}
+                    >
+                      <SelectTrigger
+                        className="w-full"
+                        aria-invalid={!!fieldState.error}
+                      >
+                        <SelectValue placeholder="Selecione o tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CASH">Dinheiro</SelectItem>
+                        <SelectItem value="CARD">Cartão ou Pix</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </FormControl>
               {fieldState.error && (
                 <FormMessage>{fieldState.error.message}</FormMessage>
@@ -119,8 +164,6 @@ export function CreateRecordForm() {
             </FormItem>
           )}
         />
-
-        {/* Tipo (Select: Venda / Retirada) */}
         <FormField
           control={form.control}
           name="type"

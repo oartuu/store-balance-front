@@ -1,20 +1,20 @@
 "use client";
 import RecordsItem from "@/components/recordsItem";
 import Header from "@/components/template/header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { finishDay, getDayRecord } from "@/lib/records";
 import { DayRecordResponse } from "@/lib/recordsTypes";
 import { use, useEffect, useState } from "react";
+import {Button} from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface PageProps {
   params: Promise<{
@@ -26,10 +26,20 @@ const page = ({ params }: PageProps) => {
   const [dayRecords, setDayRecords] = useState<DayRecordResponse>();
   const [recordsCount, setRecordsCount] = useState(0);
   const [isDayOpen, setIsDayOpen] = useState(true);
-const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const cashSales = dayRecords?.records
+    .filter((record) => record.type === "SALE" && record.origin === "CASH")
+    .reduce((acc, record) => acc + record.total, 0);
+
+  const cashWithdrawals = dayRecords?.records
+    .filter((record) => record.type === "WITHDRAW" && record.origin === "CASH")
+    .reduce((acc, record) => acc + record.total, 0);
+
+  const cashTotal = cashSales! - cashWithdrawals!;
+
   useEffect(() => {
     async function fetchApi() {
-       setIsLoading(true);
+      setIsLoading(true);
       try {
         const teste = { date: `${day}T03:00:00.000Z` };
         console.log(teste);
@@ -54,16 +64,13 @@ const [isLoading, setIsLoading] = useState(false);
     }).format(date);
   }
 
-  async function handleFinishDay() {
-    try {
-      const day = "";
-      const response = await finishDay(day);
-      console.log(response);
-      window.location.reload();
-      return response;
-    } catch (err) {
-      console.log(err);
-    }
+  function formatCurrencyBR(value: any) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
   }
 
   return (
@@ -87,7 +94,95 @@ const [isLoading, setIsLoading] = useState(false);
               {isDayOpen ? "Dia Aberto" : "Dia Fechado"}
             </span>
           </h1>
-
+          <div className="md:hidden ">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full">Ver Totais</Button>
+              </DialogTrigger>
+              <DialogContent className="dark:bg-zinc-900">
+                <DialogHeader>
+                  <DialogTitle>Totais</DialogTitle>
+                </DialogHeader>
+                <span className="text-lg font-bold">
+                  {`Total em vendas: ` +
+                    formatCurrencyBR(
+                      dayRecords?.records
+                        .filter((record) => record.type === "SALE") // filtra só os registros de vendas
+                        .reduce((acc, record) => acc + record.total, 0)
+                    )}
+                </span>
+                <span className="text-lg font-bold">
+                  {`Total em dinheiro: ` +
+                    formatCurrencyBR(
+                      dayRecords?.records
+                        .filter((record) => record.type === "SALE")
+                        .filter((record) => record.origin === "CASH")
+                        .reduce((acc, record) => acc + record.total, 0)
+                    )}
+                </span>
+                <span className="text-lg font-bold">
+                  {`Total no Cartão/Pix: ` +
+                    formatCurrencyBR(
+                      dayRecords?.records
+                        .filter((record) => record.type === "SALE")
+                        .filter((record) => record.origin === "CARD")
+                        .reduce((acc, record) => acc + record.total, 0)
+                    )}
+                </span>
+                <span className="text-lg font-bold">
+                  {`Total em Retiradas: ` +
+                    formatCurrencyBR(
+                      dayRecords?.records
+                        .filter((record) => record.type === "WITHDRAW") // filtra só os registros de vendas
+                        .reduce((acc, record) => acc + record.total, 0)
+                    )}
+                </span>
+                <span className="text-lg font-bold">
+                  {`Total no Caixa: ` + formatCurrencyBR(cashTotal)}
+                </span>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className="hidden sm:hidden md:grid grid-cols-3 justify-start gap-4  w-2/3">
+            <span className="text-lg font-bold">
+              {`Total em vendas: ` +
+                formatCurrencyBR(
+                  dayRecords?.records
+                    .filter((record) => record.type === "SALE") // filtra só os registros de vendas
+                    .reduce((acc, record) => acc + record.total, 0)
+                )}
+            </span>
+            <span className="text-lg font-bold">
+              {`Total em dinheiro: ` +
+                formatCurrencyBR(
+                  dayRecords?.records
+                    .filter((record) => record.type === "SALE")
+                    .filter((record) => record.origin === "CASH")
+                    .reduce((acc, record) => acc + record.total, 0)
+                )}
+            </span>
+            <span className="text-lg font-bold">
+              {`Total no Cartão/Pix: ` +
+                formatCurrencyBR(
+                  dayRecords?.records
+                    .filter((record) => record.type === "SALE")
+                    .filter((record) => record.origin === "CARD")
+                    .reduce((acc, record) => acc + record.total, 0)
+                )}
+            </span>
+            <span className="text-lg font-bold">
+              {`Total em Retiradas: ` +
+                formatCurrencyBR(
+                  dayRecords?.records
+                    .filter((record) => record.type === "WITHDRAW") // filtra só os registros de vendas
+                    .reduce((acc, record) => acc + record.total, 0)
+                )}
+            </span>
+            <span className="text-lg font-bold">
+              {`Total no Caixa: ` + formatCurrencyBR(cashTotal)}
+            </span>
+          </div>
+          <Separator />
           <div className="flex flex-1 flex-col justify-start gap-4 overflow-y-auto">
             {isLoading ? (
               <div className="flex-1 w-full flex items-center justify-center ">
@@ -105,6 +200,7 @@ const [isLoading, setIsLoading] = useState(false);
                 <RecordsItem
                   key={record.id}
                   title={record.title}
+                  type={record.type}
                   total={record.total}
                   items={mappedItems}
                 />

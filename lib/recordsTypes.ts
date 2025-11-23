@@ -12,6 +12,7 @@ export interface Record {
   id: string;
   title: string;
   type: string;
+  origin: string;
   total: number;
   userId: string;
   dayRecordId: string;

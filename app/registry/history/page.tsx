@@ -12,22 +12,33 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
-import { finishDay, getDayRecord } from "@/lib/records";
+import { finishDay, getDayRecord, startDay } from "@/lib/records";
 import { DayRecordResponse } from "@/lib/recordsTypes";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 import Link from "next/link";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { FolderX } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const [dayRecords, setDayRecords] = useState<DayRecordResponse>();
-  const [recordsCount, setRecordsCount] = useState(0);
+  const [recordsCount, setRecordsCount] = useState(1);
   const [isDayOpen, setIsDayOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
+  const [errMessage, setErrMessage] = useState("")
+  const router = useRouter()
   useEffect(() => {
     async function fetchApi() {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         const isAdmin = Cookies.get("isAdmin") === "true";
         setIsAdmin(isAdmin);
@@ -37,10 +48,10 @@ const page = () => {
         setDayRecords(response);
         setRecordsCount(response.records.length);
         setIsDayOpen(response.isOpen);
-      } catch (err) {
-        console.log(err);
-      }finally{
-        setIsLoading(false)
+      } catch (error:any) {
+        setErrMessage(error.message)
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchApi();
@@ -58,6 +69,15 @@ const page = () => {
       const day = "";
       const response = await finishDay(day);
       console.log(response);
+      router.push("/admin")
+      return response;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async function handleStartDay() {
+    try {
+      const response = await startDay();
       window.location.reload();
       return response;
     } catch (err) {
@@ -76,44 +96,89 @@ const page = () => {
       />
 
       <main className=" flex-1 flex flex-col justify-start gap-8 px-2 overflow-y-hidden">
-        <section className="flex-1 flex flex-col justify-between overflow-hidden gap-6 p-4 ">
-          <h1 className="text-xl font-bold">
-            {recordsCount > 1
-              ? `${recordsCount} Registros`
-              : `${recordsCount} Registro`}
-            <br />
-            <span className="text-lg font-bold">
-              {isDayOpen ? "Dia Aberto" : "Dia Fechado"}
-            </span>
-          </h1>
+        {dayRecords && recordsCount > 0 ? (
+          <section className="flex-1 flex flex-col justify-between overflow-hidden gap-6 p-4 ">
+            <h1 className="text-xl font-bold">
+              {recordsCount > 1
+                ? `${recordsCount} Registros`
+                : `${recordsCount} Registro`}
+              <br />
+              <span className="text-lg font-bold">
+                {isDayOpen ? "Dia Aberto" : "Dia Fechado"}
+              </span>
+            </h1>
 
-          <div className="flex flex-1 flex-col justify-start gap-4 overflow-y-auto">
-            {isLoading ? (
-              <div className="flex-1 w-full flex items-center justify-center ">
-                <Spinner className="size-10" />
+            <div className="flex flex-1 flex-col justify-start gap-4 overflow-y-auto">
+              {isLoading ? (
+                <div className="flex-1 w-full flex items-center justify-center ">
+                  <Spinner className="size-10" />
+                </div>
+              ) : null}
+
+              {dayRecords?.records.map((record) => {
+                const mappedItems = record.items.map((item) => ({
+                  title: item.title,
+                  price: item.price,
+                  id: item.id,
+                }));
+
+                return (
+                  <RecordsItem
+                    key={record.id}
+                    title={record.title}
+                    total={record.total}
+                    type={record.type}
+                    items={mappedItems}
+                  />
+                );
+              })}
+            </div>
+
+            <Separator />
+          </section>
+        ) : (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <FolderX />
+              </EmptyMedia>
+              <EmptyTitle>{errMessage}</EmptyTitle>
+              <EmptyDescription>
+                {errMessage === "Ainda não existem registros."
+                  ? "Nenhum registro encontrado."
+                  : "Inicie um novo dia, para que os funcionários criem registros."}
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <div className="flex gap-2">
+                {isAdmin ? (
+                  <>
+                    {errMessage === "Ainda não existem registros." ? (
+                      <Button className="hover:cursor-pointer">
+                        <Link href={"/registry/record/create"}>
+                          Novo Registro
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleStartDay}
+                        className="hover:cursor-pointer"
+                      >
+                        iniciar o Dia
+                      </Button>
+                    )}
+                  </>
+                ) : null}
               </div>
-            ) : null}
-
-            {dayRecords?.records.map((record) => {
-              const mappedItems = record.items.map((item) => ({
-                title: item.title,
-                price: item.price,
-                id: item.id,
-              }));
-
-              return (
-                <RecordsItem
-                  key={record.id}
-                  type={record.type}
-                  total={record.total}
-                  items={mappedItems}
-                />
-              );
-            })}
-          </div>
-
-          {recordsCount > 0 ? <Separator /> : null}
-        </section>
+            </EmptyContent>
+            <Button
+              variant="link"
+              asChild
+              className="text-muted-foreground"
+              size="sm"
+            ></Button>
+          </Empty>
+        )}
         {isAdmin ? (
           <section className="flex flex-col gap-6 p-4 ">
             <Dialog>
