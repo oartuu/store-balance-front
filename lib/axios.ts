@@ -73,7 +73,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        return Promise.reject(refreshError);
+        
+        return (Promise.reject(refreshError), console.log(refreshError))
       } finally {
         isRefreshing = false;
       }
