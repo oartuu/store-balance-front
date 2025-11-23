@@ -48,7 +48,10 @@ export async function RegisterCompany(
 ): Promise<RegisterResponse> {
   try {
     const response = await api.post("/auth/register", data);
-    Cookies.set("refreshTokenId", response.data.refreshTokenId, { expires: 7 });
+     Cookies.set("refreshTokenId", response.data.refreshTokenId, {
+       expires: 7,
+       secure: true,
+     });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
     return response.data;
