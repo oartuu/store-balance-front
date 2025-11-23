@@ -65,8 +65,8 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshResponse = await api.post("/auth/refresh", null, {
-          withCredentials: true,
+        const refreshResponse = await api.post("/auth/refresh", {
+          refreshTokenId: Cookies.get("refreshTokenId"),
         });
 
         const newRefreshToken = refreshResponse.data.refreshTokenId;
