@@ -28,3 +28,17 @@ export async function addEmployees (data:any){
     }
 
 }
+
+export async function getUserDetails(data:any){
+ const token = localStorage.getItem("auth_token");
+  try{
+    const response = await api.get("/auth/user", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  }catch(error){
+    console.log(error)
+  }
+}

@@ -23,13 +23,10 @@ export type AddEmployeeData = {
 }
 
 export interface LoginResponse {
-  user: User;
-  token: string;
+  accessToken: string;
 }
 export interface RegisterResponse {
-  user: User;
-  company: Company;
-  token: string;
+  accessToken: string;
 }
 
 export interface User {
