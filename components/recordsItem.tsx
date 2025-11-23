@@ -3,12 +3,12 @@ import { Item, ItemContent, ItemTitle } from "./ui/item";
 import { RecordItem } from "@/lib/recordsTypes";
 
 interface RecordsItemProps {
-  title: string;
+  type: string;
   items: RecordItem[];
   total: number;
 }
 
-export default function RecordsItem({ title, items, total }: RecordsItemProps) {
+export default function RecordsItem({ type, items, total }: RecordsItemProps) {
 
   function extractDateOnly(isoString: string): string {
     // Cria um objeto Date a partir da string ISO
@@ -35,13 +35,19 @@ export default function RecordsItem({ title, items, total }: RecordsItemProps) {
   return (
     <Item
       variant={"outline"}
-      className=" shadow-md dark:shadow-2xl"
+      className={
+        type === "SALE"
+          ? "shadow-md dark:shadow-2xl border-green-300 "
+          : "shadow-md dark:shadow-2xl border-red-300 "
+      }
     >
       <ItemContent>
-        <ItemTitle>{title}</ItemTitle>
+        <ItemTitle>{type === "SALE" ? "Venda" : "Retirada"}</ItemTitle>
         <ul className="list-disc p-4">
           {items.map((item) => (
-            <li key={item.id}>{`${item.title}: ${formatCurrencyBR(item.price)}`}</li>
+            <li key={item.id}>{`${item.title}: ${formatCurrencyBR(
+              item.price
+            )}`}</li>
           ))}
         </ul>
         <span className="">{`TOTAL: ${formatCurrencyBR(total)}`}</span>

@@ -12,30 +12,34 @@ import {
 import { Item, ItemContent } from "../ui/item";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import Cookies from "js-cookie"
 interface HeaderProps {
   title: string;
 }
 
 function Header({ title }: HeaderProps) {
-  const [admin, setAdmin] = useState<string | null>(null);
+  const [user, setUser] = useState<{ name?: string; isAdmin?: boolean }>({});
 
   useEffect(() => {
-    const value = localStorage.getItem("is_admin");
-    setAdmin(value);
+     const name = Cookies.get("userName");
+     const isAdmin = Cookies.get("isAdmin") === "true";
+     
+     setUser({ name, isAdmin });
+    
   }, []);
   return (
     <div className="w-full px-4 flex flex-col gap-3">
       <div className="w-full flex justify-between [&>h1]:text-2xl [&>h1]:font-bold px-2">
         <h1>{title}</h1>
-        {admin === "false" ? (
-          <Link href="/registry/record/create" className="hover:cursor-pointer">
-            Novo Registro 
-          </Link>
+        {!user.isAdmin ? (
+          <div className="flex w-20 justify-between items-center hover:cursor-pointer">
+            <span className="text-xl">Sair</span>
+            <LogOut size={20} />
+          </div>
         ) : null}
         <Sheet>
           <SheetTrigger asChild>
-            {admin === "true" ? (
+            {user.isAdmin ? (
               <Menu className="mt-1 hover:cursor-pointer" />
             ) : null}
           </SheetTrigger>
@@ -86,7 +90,7 @@ function Header({ title }: HeaderProps) {
               >
                 <ItemContent>
                   <div className="flex justify-between">
-                    <h2>Administrador</h2>
+                    <h2>{user.name}</h2>
                     <LogOut />
                   </div>
                 </ItemContent>

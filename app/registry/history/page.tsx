@@ -15,17 +15,22 @@ import { Spinner } from "@/components/ui/spinner";
 import { finishDay, getDayRecord } from "@/lib/records";
 import { DayRecordResponse } from "@/lib/recordsTypes";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie"
+import Link from "next/link";
 
 const page = () => {
   const [dayRecords, setDayRecords] = useState<DayRecordResponse>();
   const [recordsCount, setRecordsCount] = useState(0);
-  const [isDayOpen, setIsDayOpen] = useState(true);
+  const [isDayOpen, setIsDayOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     async function fetchApi() {
       setIsLoading(true)
       try {
+        const isAdmin = Cookies.get("isAdmin") === "true";
+        setIsAdmin(isAdmin);
         const today = new Date();
         const response: DayRecordResponse = await getDayRecord(today);
         console.log(response);
@@ -83,10 +88,9 @@ const page = () => {
           </h1>
 
           <div className="flex flex-1 flex-col justify-start gap-4 overflow-y-auto">
-
             {isLoading ? (
               <div className="flex-1 w-full flex items-center justify-center ">
-               <Spinner className="size-10"/>
+                <Spinner className="size-10" />
               </div>
             ) : null}
 
@@ -100,7 +104,7 @@ const page = () => {
               return (
                 <RecordsItem
                   key={record.id}
-                  title={record.title}
+                  type={record.type}
                   total={record.total}
                   items={mappedItems}
                 />
@@ -108,40 +112,50 @@ const page = () => {
             })}
           </div>
 
-          {isDayOpen ? <Separator /> : null}
+          {recordsCount > 0 ? <Separator /> : null}
         </section>
-        <section className="flex flex-col gap-6 p-4 ">
-          <Dialog>
-            <DialogTrigger asChild>
-              {isDayOpen && !isLoading ? (
-                <Button className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300 text-shadow-muted">
-                  Fechar o dia
-                </Button>
-              ) : null}
-            </DialogTrigger>
-            <DialogContent className="dark:bg-zinc-900">
-              <DialogTitle className="flex flex-col gap-2">
-                <span>Confirmação Necessária</span>
-                <Separator />
-              </DialogTitle>
-              <Card className="shadow-2xl">
-                <CardContent>
-                  <div className="flex flex-col gap-4 text-center ">
-                    <h1>Não é possível reverter esta ação</h1>
-                    <div className="text-center flex flex-col gap-2">
-                      <Button
-                        onClick={handleFinishDay}
-                        className="shadow-md hover:cursor-pointer hover:bg-red-300 hover:border bg-red-400 text-zinc-50  transition-all duration-300"
-                      >
-                        Confirmar
-                      </Button>
+        {isAdmin ? (
+          <section className="flex flex-col gap-6 p-4 ">
+            <Dialog>
+              <DialogTrigger asChild>
+                {isDayOpen && !isLoading ? (
+                  <Button className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300 text-shadow-muted">
+                    Fechar o dia
+                  </Button>
+                ) : null}
+              </DialogTrigger>
+              <DialogContent className="dark:bg-zinc-900">
+                <DialogTitle className="flex flex-col gap-2">
+                  <span>Confirmação Necessária</span>
+                  <Separator />
+                </DialogTitle>
+                <Card className="shadow-2xl">
+                  <CardContent>
+                    <div className="flex flex-col gap-4 text-center ">
+                      <h1>Não é possível reverter esta ação</h1>
+                      <div className="text-center flex flex-col gap-2">
+                        <Button
+                          onClick={handleFinishDay}
+                          className="shadow-md hover:cursor-pointer hover:bg-red-300 hover:border bg-red-400 text-zinc-50  transition-all duration-300"
+                        >
+                          Confirmar
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </DialogContent>
-          </Dialog>
-        </section>
+                  </CardContent>
+                </Card>
+              </DialogContent>
+            </Dialog>
+          </section>
+        ) : (
+          <section className="flex flex-col gap-6 p-4 ">
+            <Link href="/registry/record/create" className="w-full">
+              <Button className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300 text-shadow-muted w-full">
+                Novo Registro
+              </Button>
+            </Link>
+          </section>
+        )}
       </main>
     </div>
   );
