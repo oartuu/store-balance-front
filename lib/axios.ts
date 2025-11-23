@@ -77,6 +77,7 @@ api.interceptors.response.use(
         Cookies.set("refreshTokenId", newRefreshToken, {
           expires: 7,
           secure: true,
+          sameSite: "none"
         });
         Cookies.set("accessToken", newAccessToken, {
           expires: 7,

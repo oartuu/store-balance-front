@@ -25,6 +25,7 @@ export async function UserLogin(data: LoginData) {
     Cookies.set("refreshTokenId", response.data.refreshTokenId, {
       expires: 7,
       secure: true,
+      sameSite: "none"
     });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
@@ -51,6 +52,7 @@ export async function RegisterCompany(
      Cookies.set("refreshTokenId", response.data.refreshTokenId, {
        expires: 7,
        secure: true,
+       sameSite: "none"
      });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("accessToken", response.data.accessToken, { expires: 7, secure: true})
