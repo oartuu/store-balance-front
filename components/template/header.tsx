@@ -23,10 +23,9 @@ function Header({ title }: HeaderProps) {
   const [user, setUser] = useState<{ name?: string; isAdmin?: boolean }>({});
   const router = useRouter();
   useEffect(() => {
-     const name = Cookies.get("userName");
      const isAdmin = Cookies.get("isAdmin") === "true";
      
-     setUser({ name, isAdmin });
+     setUser({ isAdmin });
     
   }, []);
 
@@ -103,7 +102,7 @@ function Header({ title }: HeaderProps) {
               >
                 <ItemContent>
                   <div className="flex justify-between">
-                    <h2>{user.name}</h2>
+                    <h2>Sair</h2>
                     <LogOut />
                   </div>
                 </ItemContent>

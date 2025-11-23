@@ -90,7 +90,7 @@ const page = () => {
       <Header
         title={
           dayRecords?.date
-            ? `Histórico do Dia ${formatDateBR(dayRecords.date)}`
+            ? `Histórico do Dia ${formatDateBR(dayRecords.createdAt)}`
             : "Histórico"
         }
       />
