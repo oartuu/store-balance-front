@@ -18,7 +18,8 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl md:text-6xl font-bold"
         >
-          Operio é um Sistema de Registros para Comércios.
+          Eleve o nível do seu comércio com o Operio controle total das suas
+          operações.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -133,7 +134,10 @@ export default function LandingPage() {
             "Relatórios detalhados para tomada de decisões",
             "Interface intuitiva e rápida de usar",
           ].map((benefit, i) => (
-            <li key={i} className="bg-muted/10 p-4 rounded-lg shadow-md dark:shadow-2xl">
+            <li
+              key={i}
+              className="bg-muted/10 p-4 rounded-lg shadow-md dark:shadow-2xl"
+            >
               • {benefit}
             </li>
           ))}
