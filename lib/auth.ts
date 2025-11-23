@@ -28,7 +28,7 @@ export async function UserLogin(data: LoginData) {
     });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
-    return response.data;
+    return response.data.accessToken;
   } catch (error) {
     // Verifica se é erro do Axios
     if (error instanceof AxiosError) {
@@ -45,7 +45,7 @@ export async function UserLogin(data: LoginData) {
 
 export async function RegisterCompany(
   data: RegisterData
-): Promise<RegisterResponse> {
+){
   try {
     const response = await api.post("/auth/register", data);
      Cookies.set("refreshTokenId", response.data.refreshTokenId, {
@@ -54,7 +54,7 @@ export async function RegisterCompany(
      });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
-    return response.data;
+    return response.data.accessToken;
   } catch (error) {
     if (error instanceof AxiosError) {
       const status = error.response?.status;

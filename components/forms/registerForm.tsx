@@ -59,12 +59,12 @@ export default function RegisterForm() {
 
         // Sucesso: se sua API retornar um token após registro
         if (response.accessToken) {
-          localStorage.setItem("auth_token", response.accessToken);
+          localStorage.setItem("auth_token", response);
           router.push("/registry/record/create");
         } else {
           // Redirecionar ou mostrar algo para o usuário
           router.push("/login");
-        }
+        }                          
       } catch (error: any) {
         setErrMessage(error.message);
         setError(true);

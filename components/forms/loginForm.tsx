@@ -32,12 +32,11 @@ export default function LoginForm() {
   async function onSubmit(formData: LoginData) {
     setIsLoading(true)
      try {
-       const response: LoginResponse = await UserLogin(formData);
+       const response  = await UserLogin(formData);
        // Supondo que a resposta tem: { accessToken: string, ... }
-       const { accessToken } = response;
        console.log(Cookies.get())
        // Salva o access token
-       localStorage.setItem("auth_token", accessToken);
+       localStorage.setItem("auth_token", response);
 
        // Redireciona
        router.push("/registry/record/create");
