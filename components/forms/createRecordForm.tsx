@@ -25,13 +25,15 @@ import {
 import { X } from "lucide-react";
 import { createRecord } from "@/lib/records";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // Regex para permitir apenas dígitos e vírgula
 const numberCommaRegex = /^\d*(,\d*)*$/;
 
 const formSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
-  type: z.enum(["SALE", "WITHDRAWAL"], "Tipo inválido"),
+  type: z.enum(["SALE", "WITHDRAW"], "Tipo inválido"),
   items: z
     .array(
       z.object({
@@ -50,6 +52,9 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 export function CreateRecordForm() {
+  const router = useRouter();
+  const [error, setError] = useState(false);
+  const[errMessage, setErrMessage] = useState("")
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -75,12 +80,6 @@ export function CreateRecordForm() {
       ...item,
       price: parseFloat(item.price.replace(/,/g, ".")),
     }));
-
-    console.log("Dados enviados:", {
-      title: data.title,
-      type: data.type,
-      items: formattedItems,
-    });
     const formatData = {
       title: data.title,
       type: data.type,
@@ -88,10 +87,11 @@ export function CreateRecordForm() {
     };
     try{
         const response = await createRecord(formatData);
-    }catch (error){
-        console.log(error)
-    }finally{
-        window.location.reload();
+        router.push("/registry/history");
+    }catch (error:any){
+      setErrMessage(error.message)
+      setError(true)
+      
     }
   };
 
@@ -99,6 +99,11 @@ export function CreateRecordForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Título principal */}
+        {error ? (
+          <div className="w-full border border-red-400 bg-red-300/60 p-4 rounded-md text-center">
+            <span className="">{errMessage}</span>
+          </div>
+        ) : null}
         <FormField
           control={form.control}
           name="title"
@@ -140,7 +145,7 @@ export function CreateRecordForm() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="SALE">Venda</SelectItem>
-                        <SelectItem value="WITHDRAWAL">Retirada</SelectItem>
+                        <SelectItem value="WITHDRAW">Retirada</SelectItem>
                       </SelectContent>
                     </Select>
                   )}

@@ -14,6 +14,7 @@ export default function RegisterForm() {
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
   const router = useRouter();
   const {
     register,
@@ -55,27 +56,19 @@ export default function RegisterForm() {
       setLoading(true);
       try {
         const response = await RegisterCompany(formData);
-        // Verifica algo específico no response para garantir que é sucesso "real"
-        if (!response.token) {
-          // Se por algum motivo não tem token, trata como erro
-          setError(true)
-          return
-        }
 
-        localStorage.setItem("auth_token", response.token);
-        localStorage.setItem("user_name", response.user.name )
-        localStorage.setItem("is_admin", response.user.isAdmin.toString()) 
-        router.push("/admin");
-      } catch (err: any) {
-        console.error("Erro no registro:", err);
+        // Sucesso: se sua API retornar um token após registro
+        if (response.accessToken) {
+          localStorage.setItem("auth_token", response.accessToken);
+          router.push("/registry/record/create");
+        } else {
+          // Redirecionar ou mostrar algo para o usuário
+          router.push("/login");
+        }
+      } catch (error: any) {
+        setErrMessage(error.message);
         setError(true);
 
-        // Se quiser, pode extrair mensagem do servidor:
-        if (err.response) {
-          // Erro HTTP
-          console.log("Status:", err.response.status);
-          console.log("Erro retornado:", err.response.data);
-        }
       } finally {
         setLoading(false);
       }
@@ -86,7 +79,7 @@ export default function RegisterForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 ">
       {error ? (
         <div className="w-full border border-red-400 bg-red-300/60 p-4 rounded-md text-center">
-          <span className="">Empresa ou Email já cadastrados</span>
+          <span className="">{errMessage}</span>
         </div>
       ) : null}
       <div className="flex flex-col gap-3 [&>input]:border [&>input]:rounded-lg [&>input]:px-4 [&>input]:py-2 [&>input]:shadow-md [&>label]:ml-2">
@@ -119,12 +112,18 @@ export default function RegisterForm() {
         <label htmlFor="email">Email</label>
         <input
           type="text"
-          {...register("email", { required: true })}
+          {...register("email", {
+            required: "O email é obrigatório",
+            pattern: {
+              value: /\S+@\S+\.\S+/, // regex básica para email
+              message: "Insira um email válido",
+            },
+          })}
           placeholder="Digite seu Email"
         />
         {errors.email && (
           <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-            Este campo é obrigatório
+            {errors.email.message}
           </span>
         )}
       </div>
@@ -145,13 +144,19 @@ export default function RegisterForm() {
           <input
             className="w-full"
             type={showPassword ? "text" : "password"}
-            {...register("password", { required: true })}
+            {...register("password", {
+              required: "A senha é obrigatória",
+              minLength: {
+                value: 8,
+                message: "A senha deve ter no mínimo 8 caracteres",
+              },
+            })}
             placeholder="Digite sua Senha"
           />
         </div>
         {errors.password && (
           <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-            Este campo é obrigatório
+            {errors.password.message}
           </span>
         )}
         {!passwordMatch && (
@@ -177,13 +182,19 @@ export default function RegisterForm() {
           <input
             type={showConfirmPassword ? "text" : "password"}
             className="w-full"
-            {...register("confirmPassword", { required: true })}
+            {...register("confirmPassword", {
+              required: "A senha é obrigatória",
+              minLength: {
+                value: 8,
+                message: "A senha deve ter no mínimo 8 caracteres",
+              },
+            })}
             placeholder="Digite sua Senha"
           />
         </div>
         {errors.confirmPassword && (
           <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-            Este campo é obrigatório
+            {errors.confirmPassword.message}
           </span>
         )}
         {!passwordMatch && (

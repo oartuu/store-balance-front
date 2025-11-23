@@ -1,4 +1,5 @@
 
+import { AxiosError } from "axios";
 import { api } from "./axios";
 
 export async function getTodayRecords() {
@@ -67,7 +68,13 @@ export async function createRecord(data:any){
         })
         return response.data
     }catch(error){
-        console.log(error)
+        if (error instanceof AxiosError) {
+              const status = error.response?.status;
+              const message = error.response?.data?.message ?? error.message;
+              // lança um objeto de erro padronizado
+              throw { status, message };
+            }
+            throw error; // erro inesperado, relança
     }
 
 }

@@ -12,6 +12,7 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [errMessage, setErrMessage] = useState("")
   const router = useRouter();
   const {
     register,
@@ -30,25 +31,29 @@ export default function LoginForm() {
 
   async function onSubmit(formData: LoginData) {
     setIsLoading(true)
-    try{
-     const response:LoginResponse = await UserLogin(formData)
-     localStorage.setItem("auth_token", response.token)
-     //localStorage.setItem("user", response.user.name )
-     //localStorage.setItem("is_admin", response.user.isAdmin.toString() )
-     router.push("/admin")
-    }catch (err){
-        setError(true)
-        console.log(err)
-    }finally{
-        setIsLoading(false)
-    }
+     try {
+       const response: LoginResponse = await UserLogin(formData);
+       // Supondo que a resposta tem: { accessToken: string, ... }
+       const { accessToken } = response;
+
+       // Salva o access token
+       localStorage.setItem("auth_token", accessToken);
+
+       // Redireciona
+       router.push("/registry/record/create");
+     } catch (error: any) {
+       setErrMessage(error.message)
+       setError(true);
+     } finally {
+       setIsLoading(false);
+     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 ">
       {error ? (
         <div className="w-full border border-red-400 bg-red-300/60 p-4 rounded-md text-center">
-          <span className="">Credenciais inválidas</span>
+          <span className="">{errMessage}</span>
         </div>
       ) : null}
       <div className="flex flex-col gap-3 [&>input]:border [&>input]:rounded-lg [&>input]:px-4 [&>input]:py-2 [&>input]:shadow-md [&>label]:ml-2">
@@ -68,12 +73,18 @@ export default function LoginForm() {
         <label htmlFor="email">Email</label>
         <input
           type="text"
-          {...register("email", { required: true })}
+          {...register("email", {
+            required: "O email é obrigatório",
+            pattern: {
+              value: /\S+@\S+\.\S+/, // regex básica para email
+              message: "Insira um email válido",
+            },
+          })}
           placeholder="Digite seu Email"
         />
         {errors.email && (
           <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-            Este campo é obrigatório
+            {errors.email.message}
           </span>
         )}
       </div>

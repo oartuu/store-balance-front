@@ -16,6 +16,7 @@ export default function AddEmployeeForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, SetError] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -72,9 +73,10 @@ export default function AddEmployeeForm() {
         }
         window.location.reload();
         return (response)
-      } catch (err) {
+      } catch (error:any) {
+        setErrMessage(error)
         SetError(true);
-        console.log(err);
+       
       } finally {
         setIsLoading(false);
       }
@@ -109,12 +111,18 @@ export default function AddEmployeeForm() {
             <label htmlFor="email">Email</label>
             <input
               type="text"
-              {...register("email", { required: true })}
+              {...register("email", {
+                required: "O email é obrigatório",
+                pattern: {
+                  value: /\S+@\S+\.\S+/, // regex básica para email
+                  message: "Insira um email válido",
+                },
+              })}
               placeholder="Digite o email do Funcionário"
             />
             {errors.email && (
               <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-                Este campo é obrigatório
+                {errors.email.message}
               </span>
             )}
           </div>
@@ -135,13 +143,13 @@ export default function AddEmployeeForm() {
               )}
               <input
                 type={showPassword ? "text" : "password"}
-                {...register("password", { required: true })}
+                {...register("password", { required: "A senha é obrigatória", minLength: { value: 8, message: "A senha deve ter no mínimo 8 caracteres"} })}
                 placeholder="Digite a senha do Funcionário"
               />
             </div>
             {errors.password && (
               <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-                Este campo é obrigatório
+                {errors.password.message}
               </span>
             )}
             {!passwordMatch && (
@@ -166,13 +174,13 @@ export default function AddEmployeeForm() {
               )}
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                {...register("confirmPassword", { required: true })}
+                {...register("confirmPassword", { required: "A senha é obrigatória", minLength: { value: 8, message: "A senha deve ter no mínimo 8 caracteres"} })}
                 placeholder="Confirme a senha do funcionário"
               />
             </div>
             {errors.confirmPassword && (
               <span className="ml-2 text-xs font-light text-red-600 dark:text-red-400">
-                Este campo é obrigatório
+                {errors.confirmPassword.message}
               </span>
             )}
             {!passwordMatch && (
