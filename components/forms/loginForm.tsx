@@ -36,8 +36,6 @@ export default function LoginForm() {
        // Supondo que a resposta tem: { accessToken: string, ... }
        console.log(Cookies.get())
        // Salva o access token
-       localStorage.setItem("auth_token", response);
-
        // Redireciona
        router.push("/registry/record/create");
      } catch (error: any) {

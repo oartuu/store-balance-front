@@ -53,6 +53,7 @@ export async function RegisterCompany(
        secure: true,
      });
     Cookies.set("name", response.data.user.name, { expires: 7 });
+    Cookies.set("accessToken", response.data.accessToken, { expires: 7, secure: true})
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
     return response.data.accessToken;
   } catch (error) {
@@ -69,10 +70,7 @@ export async function RegisterCompany(
 export async function logout() {
   try {
     const response = await api.post("/auth/logout");
-    Cookies.remove("refreshTokenId");
-    Cookies.remove("name");
-    Cookies.remove("isAdmin");
-    localStorage.removeItem("auth_token");
+    
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -82,5 +80,10 @@ export async function logout() {
       throw { status, message };
     }
     throw error; // erro inesperado, relança
+  }finally{
+    Cookies.remove("refreshTokenId");
+    Cookies.remove("name");
+    Cookies.remove("isAdmin");
+    Cookies.remove("accessToken");
   }
 }

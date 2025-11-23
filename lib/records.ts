@@ -1,9 +1,10 @@
 
 import { AxiosError } from "axios";
 import { api } from "./axios";
+import Cookies from "js-cookie";
 
 export async function getTodayRecords() {
-  const token = localStorage.getItem("auth_token");
+  const token = Cookies.get("accessToken");
   try {
     const response = await api.get("/records", {
       headers: {
@@ -16,7 +17,7 @@ export async function getTodayRecords() {
   }
 }
 export async function getDayRecords() {
-  const token = localStorage.getItem("auth_token");
+  const token = Cookies.get("accessToken");
   try {
     const response = await api.get("/records/day-records", {
       headers: {
@@ -30,7 +31,7 @@ export async function getDayRecords() {
 }
 
 export async function getDayRecord(data: any) {
-  const token = localStorage.getItem("auth_token");
+  const token = Cookies.get("accessToken");
   try {
     const response = await api.get("/records",  {
       params: data,
@@ -51,7 +52,7 @@ export async function getDayRecord(data: any) {
 }
 
 export async function finishDay(data:any){
-    const token = localStorage.getItem("auth_token");
+    const token = Cookies.get("accessToken");
     try{
         const response = await api.post("/records/finish", data, {
             headers:{
@@ -65,7 +66,7 @@ export async function finishDay(data:any){
 
 }
 export async function createRecord(data:any){
-    const token = localStorage.getItem("auth_token");
+    const token = Cookies.get("accessToken");
     try{
         const response = await api.post("/records", data, {
             headers:{
@@ -85,7 +86,7 @@ export async function createRecord(data:any){
 
 }
 export async function startDay(){
-    const token = localStorage.getItem("auth_token");
+    const token = Cookies.get("accessToken");
     try{
         const response = await api.post("/records/start", {
             headers:{

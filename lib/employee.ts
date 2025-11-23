@@ -1,8 +1,9 @@
 import { AxiosError } from "axios";
 import { api } from "./axios";
+import Cookies from "js-cookie";
 
 export async function getEmployees() {
-  const token = localStorage.getItem("auth_token");
+  const token = Cookies.get("accessToken")
   try {
     const response = await api.get("/auth/employees", {
       headers: {
@@ -22,7 +23,7 @@ export async function getEmployees() {
 }
 
 export async function addEmployees (data:any){
-    const token = localStorage.getItem("auth_token");
+    const token = Cookies.get("accessToken");
     try{
         const response = await api.post("/auth/employees",data,{
             headers:{
@@ -43,7 +44,7 @@ export async function addEmployees (data:any){
 }
 
 export async function getUserDetails(data:any){
- const token = localStorage.getItem("auth_token");
+ const token = Cookies.get("accessToken");
   try{
     const response = await api.get("/auth/user", {
       headers: {

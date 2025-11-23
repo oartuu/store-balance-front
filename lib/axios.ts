@@ -55,7 +55,10 @@ api.interceptors.response.use(
         Cookies.set("name", userName, { espires: 7 });
         Cookies.set("isAdmin", admin, { espires: 7 });
         // **Atualiza no localStorage** com a chave correta
-        localStorage.setItem("auth_token", newAccessToken);
+        Cookies.set("accessToken", newAccessToken, {
+          expires: 7,
+          secure: true,
+        });
 
         // Atualiza o header padrão do Axios
         api.defaults.headers.common[
@@ -82,7 +85,7 @@ api.interceptors.response.use(
 
 api.interceptors.request.use((config) => {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+    typeof window !== "undefined" ? Cookies.get("accessToken") : null;
 
   if (token) {
     config.headers = config.headers ?? {};
