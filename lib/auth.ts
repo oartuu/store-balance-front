@@ -1,5 +1,10 @@
 // lib/requests.ts
-import { LoginData, RegisterData, RegisterResponse, ResponseError } from "./authTypes";
+import {
+  LoginData,
+  RegisterData,
+  RegisterResponse,
+  ResponseError,
+} from "./authTypes";
 import { api } from "./axios";
 import { AxiosError } from "axios";
 
@@ -12,8 +17,6 @@ export async function getApiStatus() {
     throw new Error(error?.response?.data?.message || "Erro interno");
   }
 }
-
-
 
 export async function UserLogin(data: LoginData) {
   try {
@@ -50,4 +53,17 @@ export async function RegisterCompany(
   }
 }
 
-
+export async function logout() {
+  try {
+    const response = await api.post("/auth/logout");
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
+      const message = error.response?.data?.message ?? error.message;
+      // lança um objeto de erro padronizado
+      throw { status, message };
+    }
+    throw error; // erro inesperado, relança
+  }
+}

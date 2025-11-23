@@ -2,24 +2,29 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const { pathname, origin } = request.nextUrl;
-
-  // Obtém os cookies
+  const { pathname } = request.nextUrl;
   const refreshTokenId = request.cookies.get("refreshTokenId")?.value;
   const isAdmin = request.cookies.get("isAdmin")?.value === "true";
 
-  // Definição das rotas protegidas
-  const adminRoute = pathname.startsWith("/admin");
+  // **Novas rotas públicas de login / registro**
+  const isLoginPage = pathname === "/login";
+  const isRegisterPage = pathname === "/register";
 
-  // Rotas do registro (registry):
-  // /registry/history/[day]
+  // Se já estiver logado (tem token) e for pra login ou registro, redireciona para home ou dashboard
+  if (refreshTokenId && (isLoginPage || isRegisterPage)) {
+    // define para onde redirecionar — pode ser "/" ou algo como "/dashboard"
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/registry/record/create";
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // Suas rotas protegidas existentes
+  const adminRoute = pathname.startsWith("/admin");
   const registryHistoryDay = /^\/registry\/history\/[^\/]+$/.test(pathname);
-  // /registry/history (sem um dia específico)
   const registryHistoryBase = pathname === "/registry/history";
-  // /registry/record/create
   const registryRecordCreate = pathname === "/registry/record/create";
 
-  // PROTEÇÃO DE LOGIN (precisa estar autenticado para essas rotas protegidas)
+  // Se é rota protegida e **não** está autenticado
   if (
     (adminRoute ||
       registryHistoryDay ||
@@ -27,32 +32,33 @@ export function middleware(request: NextRequest) {
       registryRecordCreate) &&
     !refreshTokenId
   ) {
-    return NextResponse.redirect(`${origin}/login`);
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   }
 
-  // AUTORIZAÇÃO ADMIN
-
-  // /admin: apenas admin
+  // Autorização de admin
   if (adminRoute && !isAdmin) {
-    return NextResponse.redirect(`${origin}/not-authorized`);
+    const url = request.nextUrl.clone();
+    url.pathname = "/not-authorized";
+    return NextResponse.redirect(url);
   }
 
-  // /registry/history/[day]: apenas admin
   if (registryHistoryDay && !isAdmin) {
-    return NextResponse.redirect(`${origin}/not-authorized`);
+    const url = request.nextUrl.clone();
+    url.pathname = "/not-authorized";
+    return NextResponse.redirect(url);
   }
-
-  // Outras rotas de registry (history base ou record/create): são permitidas para qualquer usuário autenticado
-  // Então, se chegou aqui, e tem refreshTokenId (verificado acima), deixa passar.
 
   return NextResponse.next();
 }
 
-// Configurações de quais rotas o middleware deve ser aplicado
 export const config = {
   matcher: [
     "/admin/:path*",
-    "/registry/history/:path*", // cobre /registry/history e /registry/history/[day]
+    "/registry/history/:path*",
     "/registry/record/create",
+    "/login",
+    "/register", // garantir que middleware roda para login / register também
   ],
 };

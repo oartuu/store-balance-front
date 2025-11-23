@@ -13,13 +13,15 @@ import { Item, ItemContent } from "../ui/item";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie"
+import { logout } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 interface HeaderProps {
   title: string;
 }
 
 function Header({ title }: HeaderProps) {
   const [user, setUser] = useState<{ name?: string; isAdmin?: boolean }>({});
-
+  const router = useRouter();
   useEffect(() => {
      const name = Cookies.get("userName");
      const isAdmin = Cookies.get("isAdmin") === "true";
@@ -27,12 +29,22 @@ function Header({ title }: HeaderProps) {
      setUser({ name, isAdmin });
     
   }, []);
+
+  async function handleLogout(){
+    try{
+      const response = await logout()
+      router.push("/")
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   return (
     <div className="w-full px-4 flex flex-col gap-3">
       <div className="w-full flex justify-between [&>h1]:text-2xl [&>h1]:font-bold px-2">
         <h1>{title}</h1>
         {!user.isAdmin ? (
-          <div className="flex w-20 justify-between items-center hover:cursor-pointer">
+          <div onClick={handleLogout} className="flex w-20 justify-between items-center hover:cursor-pointer">
             <span className="text-xl">Sair</span>
             <LogOut size={20} />
           </div>
@@ -86,6 +98,7 @@ function Header({ title }: HeaderProps) {
               <Separator />
               <Item
                 variant={"outline"}
+                onClick={handleLogout}
                 className="shadow-md dark:shadow-2xl w-4/5 hover:cursor-pointer"
               >
                 <ItemContent>
