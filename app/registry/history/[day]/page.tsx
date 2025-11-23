@@ -44,7 +44,6 @@ const page = ({ params }: PageProps) => {
         const teste = { date: `${day}T03:00:00.000Z` };
         console.log(teste);
         const response: DayRecordResponse = await getDayRecord(teste);
-        console.log(response);
         setDayRecords(response);
         setRecordsCount(response.records.length);
         setIsDayOpen(response.isOpen);

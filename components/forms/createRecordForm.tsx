@@ -27,6 +27,7 @@ import { createRecord } from "@/lib/records";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Spinner } from "../ui/spinner";
 
 // Regex para permitir apenas dígitos e vírgula
 const numberCommaRegex = /^\d*(,\d*)*$/;
@@ -55,6 +56,7 @@ export function CreateRecordForm() {
   const router = useRouter();
   const [error, setError] = useState(false);
   const[errMessage, setErrMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -97,6 +99,7 @@ export function CreateRecordForm() {
 
   const onSubmit = async (data: FormSchema) => {
     // Converte a string price (ex: "12,34") para número (12.34)
+    setIsLoading(true);
     const formattedItems = data.items.map((item) => ({
       ...item,
       price: parseFloat(item.price.replace(/,/g, ".")),
@@ -113,6 +116,7 @@ export function CreateRecordForm() {
         router.push("/registry/history");
     }catch (error:any){
       setErrMessage(error.message)
+      setIsLoading(false);
       setError(true)
       
     }
@@ -292,9 +296,22 @@ export function CreateRecordForm() {
         </div>
 
         <div className="w-full flex flex-col justify-between gap-4 text-center">
-          <Button className="w-full hover:cursor-pointer" type="submit">
-            Enviar
-          </Button>
+          {isLoading ? (
+            <Button
+              disabled
+              className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300"
+            >
+              <Spinner />
+              Registrando...
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="shadow-md hover:cursor-pointer hover:bg-transparent hover:border hover:text-zinc-950 hover:dark:text-zinc-50 transition-all duration-300"
+            >
+              Registrar
+            </Button>
+          )}
           <Link href="/registry/history" className="hover:cursor-pointer">
             Ver Registros
           </Link>

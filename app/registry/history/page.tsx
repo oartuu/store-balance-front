@@ -44,7 +44,6 @@ const page = () => {
         setIsAdmin(isAdmin);
         const today = new Date();
         const response: DayRecordResponse = await getDayRecord(today);
-        console.log(response);
         setDayRecords(response);
         setRecordsCount(response.records.length);
         setIsDayOpen(response.isOpen);

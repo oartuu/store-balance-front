@@ -47,7 +47,7 @@ api.interceptors.response.use(
 
       try {
         const refreshResponse = await api.post("/auth/refresh");
-        const newRefreshToken = refreshResponse.data.refreshToken;
+        const newRefreshToken = refreshResponse.data.refreshTokenId;
         const newAccessToken = refreshResponse.data.accessToken;
         const {name:userName, isAdmin:admin} = refreshResponse.data.user
 
