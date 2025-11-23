@@ -65,7 +65,7 @@ const page = () => {
             {dayRecords
               ? dayRecords.map((record) => (
                   <DayRecordsItem
-                    date={record.date}
+                    date={record.createdAt}
                     recordsDate={formatDateBR(record.createdAt)}
                     key={record.id}
                   />

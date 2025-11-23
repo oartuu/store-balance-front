@@ -28,7 +28,7 @@ export async function UserLogin(data: LoginData) {
     });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
-    return response.data.accessToken;
+    return response.data;
   } catch (error) {
     // Verifica se é erro do Axios
     if (error instanceof AxiosError) {
@@ -55,7 +55,7 @@ export async function RegisterCompany(
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("accessToken", response.data.accessToken, { expires: 7, secure: true})
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
-    return response.data.accessToken;
+    return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
       const status = error.response?.status;
