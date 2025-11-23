@@ -7,6 +7,7 @@ import {
 } from "./authTypes";
 import { api } from "./axios";
 import { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 export async function getApiStatus() {
   try {
@@ -21,6 +22,9 @@ export async function getApiStatus() {
 export async function UserLogin(data: LoginData) {
   try {
     const response = await api.post("/auth/login", data);
+    Cookies.set("refreshToken", response.data.refreshToken, { expires: 7, secure: true});
+    Cookies.set("name", response.data.user.name, { expires: 7 });
+    Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
     return response.data;
   } catch (error) {
     // Verifica se é erro do Axios
@@ -40,7 +44,10 @@ export async function RegisterCompany(
   data: RegisterData
 ): Promise<RegisterResponse> {
   try {
-    const response = await api.post<RegisterResponse>("/auth/register", data);
+    const response = await api.post("/auth/register", data);
+    Cookies.set("refreshToken", response.data.refreshToken, { expires: 7 });
+    Cookies.set("name", response.data.user.name, { expires: 7 });
+    Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -56,6 +63,10 @@ export async function RegisterCompany(
 export async function logout() {
   try {
     const response = await api.post("/auth/logout");
+    Cookies.remove("refreshToken");
+    Cookies.remove("name");
+    Cookies.remove("isAdmin");
+    localStorage.removeItem("auth_token");
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

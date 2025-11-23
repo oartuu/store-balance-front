@@ -7,7 +7,7 @@ import { LoginData, LoginResponse } from "@/lib/authTypes";
 import { Spinner } from "../ui/spinner";
 import { UserLogin } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-
+import Cookies from "js-cookie";
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +35,7 @@ export default function LoginForm() {
        const response: LoginResponse = await UserLogin(formData);
        // Supondo que a resposta tem: { accessToken: string, ... }
        const { accessToken } = response;
-
+       console.log(Cookies.get())
        // Salva o access token
        localStorage.setItem("auth_token", accessToken);
 
