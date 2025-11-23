@@ -51,7 +51,7 @@ api.interceptors.response.use(
         const newAccessToken = refreshResponse.data.accessToken;
         const {name:userName, isAdmin:admin} = refreshResponse.data.user
 
-        Cookies.set("refreshToken", newRefreshToken, {espires: 7})
+        Cookies.set("refreshTokenId", newRefreshToken, {espires: 7})
         Cookies.set("name", userName, { espires: 7 });
         Cookies.set("isAdmin", admin, { espires: 7 });
         // **Atualiza no localStorage** com a chave correta

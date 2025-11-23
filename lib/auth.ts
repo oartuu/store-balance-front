@@ -22,7 +22,10 @@ export async function getApiStatus() {
 export async function UserLogin(data: LoginData) {
   try {
     const response = await api.post("/auth/login", data);
-    Cookies.set("refreshToken", response.data.refreshToken, { expires: 7, secure: true});
+    Cookies.set("refreshTokenId", response.data.refreshTokenId, {
+      expires: 7,
+      secure: true,
+    });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
     return response.data;
@@ -45,7 +48,7 @@ export async function RegisterCompany(
 ): Promise<RegisterResponse> {
   try {
     const response = await api.post("/auth/register", data);
-    Cookies.set("refreshToken", response.data.refreshToken, { expires: 7 });
+    Cookies.set("refreshTokenId", response.data.refreshTokenId, { expires: 7 });
     Cookies.set("name", response.data.user.name, { expires: 7 });
     Cookies.set("isAdmin", response.data.user.isAdmin, { expires: 7 });
     return response.data;
@@ -63,7 +66,7 @@ export async function RegisterCompany(
 export async function logout() {
   try {
     const response = await api.post("/auth/logout");
-    Cookies.remove("refreshToken");
+    Cookies.remove("refreshTokenId");
     Cookies.remove("name");
     Cookies.remove("isAdmin");
     localStorage.removeItem("auth_token");
