@@ -69,7 +69,7 @@ export default function LandingPage() {
             <Card className="rounded-2xl shadow-md dark:shadow-2xl h-full">
               <CardContent className="p-6 flex flex-col gap-3 h-full justify-between">
                 <h3 className="text-xl font-semibold">{f.title}</h3>
-                <p className="text-muted-foreground flex-grow">{f.desc}</p>
+                <p className="text-muted-foreground grow">{f.desc}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -112,7 +112,7 @@ export default function LandingPage() {
                 <h4 className="text-lg font-semibold">
                   Passo {item.step}: {item.title}
                 </h4>
-                <p className="text-muted-foreground flex-grow">{item.desc}</p>
+                <p className="text-muted-foreground grow">{item.desc}</p>
               </CardContent>
             </Card>
           ))}
