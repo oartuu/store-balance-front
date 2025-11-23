@@ -1,4 +1,5 @@
 // lib/requests.ts
+import { refresh } from "next/cache";
 import {
   LoginData,
   RegisterData,
@@ -71,8 +72,13 @@ export async function RegisterCompany(
 
 export async function logout() {
   try {
-    const response = await api.post("/auth/logout");
-    
+    const response = await api.post("/auth/logout" , {
+      refreshTokenId: Cookies.get("refreshTokenId"),
+    });
+     Cookies.remove("refreshTokenId");
+     Cookies.remove("name");
+     Cookies.remove("isAdmin");
+     Cookies.remove("accessToken");
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -83,9 +89,6 @@ export async function logout() {
     }
     throw error; // erro inesperado, relança
   }finally{
-    Cookies.remove("refreshTokenId");
-    Cookies.remove("name");
-    Cookies.remove("isAdmin");
-    Cookies.remove("accessToken");
+   
   }
 }
